@@ -133,6 +133,14 @@ const keys = {
 }
 
 let lastTime = performance.now()
+const camera = {
+  x: 0,
+  y: 0,
+}
+
+const SCROLL_POST_RIGHT = 500
+const SCROLL_POST_TOP = 100
+const SCROLL_POST_BOTTOM = 280
 function animate(backgroundCanvas) {
   // Calculate delta time
   const currentTime = performance.now()
@@ -143,12 +151,32 @@ function animate(backgroundCanvas) {
   player.handleInput(keys)
   player.update(deltaTime, collisionBlocks)
 
+  // Track scroll post distance
+  if (player.x > SCROLL_POST_RIGHT) {
+    const scrollPostDistance = player.x - SCROLL_POST_RIGHT
+    camera.x = scrollPostDistance
+  }
+
+  if (player.y < SCROLL_POST_TOP && camera.y > 0) {
+    const scrollPostDistance = SCROLL_POST_TOP - player.y
+    camera.y = scrollPostDistance
+  }
+
+  if (player.y > SCROLL_POST_BOTTOM) {
+    const scrollPostDistance = player.y - SCROLL_POST_BOTTOM
+    camera.y = -scrollPostDistance
+  }
+
   // Render scene
   c.save()
   c.scale(dpr, dpr)
+  c.translate(-camera.x, camera.y)
   c.clearRect(0, 0, canvas.width, canvas.height)
   c.drawImage(backgroundCanvas, 0, 0)
   player.draw(c)
+  // c.fillRect(SCROLL_POST_RIGHT, 100, 10, 100)
+  // c.fillRect(300, SCROLL_POST_TOP, 100, 10)
+  // c.fillRect(300, SCROLL_POST_BOTTOM, 100, 10)
   c.restore()
 
   requestAnimationFrame(() => animate(backgroundCanvas))
