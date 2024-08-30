@@ -116,7 +116,7 @@ const renderStaticLayers = async () => {
 const player = new Player({
   x: 100,
   y: 100,
-  size: 16,
+  size: 32,
   velocity: { x: 0, y: 0 },
 })
 
