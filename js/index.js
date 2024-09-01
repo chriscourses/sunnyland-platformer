@@ -5,9 +5,15 @@ const dpr = window.devicePixelRatio || 1
 canvas.width = 1024 * dpr
 canvas.height = 576 * dpr
 
-const layersData = {
+const oceanLayerData = {
   l_New_Layer_1: l_New_Layer_1,
+}
+
+const brambleLayerData = {
   l_New_Layer_2: l_New_Layer_2,
+}
+
+const layersData = {
   l_New_Layer_8: l_New_Layer_8,
   l_New_Layer_3: l_New_Layer_3,
   l_Decorations: l_Decorations,
@@ -81,7 +87,7 @@ const renderLayer = (tilesData, tilesetImage, tileSize, context) => {
   })
 }
 
-const renderStaticLayers = async () => {
+const renderStaticLayers = async (layersData) => {
   const offscreenCanvas = document.createElement('canvas')
   offscreenCanvas.width = canvas.width
   offscreenCanvas.height = canvas.height
@@ -141,6 +147,8 @@ const camera = {
 const SCROLL_POST_RIGHT = 500
 const SCROLL_POST_TOP = 100
 const SCROLL_POST_BOTTOM = 280
+let oceanBackgroundCanvas = null
+let brambleBackgroundCanvas = null
 function animate(backgroundCanvas) {
   // Calculate delta time
   const currentTime = performance.now()
@@ -172,6 +180,8 @@ function animate(backgroundCanvas) {
   c.scale(dpr, dpr)
   c.translate(-camera.x, camera.y)
   c.clearRect(0, 0, canvas.width, canvas.height)
+  c.drawImage(oceanBackgroundCanvas, camera.x * 0.32, 0)
+  c.drawImage(brambleBackgroundCanvas, camera.x * 0.16, 0)
   c.drawImage(backgroundCanvas, 0, 0)
   player.draw(c)
   // c.fillRect(SCROLL_POST_RIGHT, 100, 10, 100)
@@ -184,7 +194,9 @@ function animate(backgroundCanvas) {
 
 const startRendering = async () => {
   try {
-    const backgroundCanvas = await renderStaticLayers()
+    oceanBackgroundCanvas = await renderStaticLayers(oceanLayerData)
+    brambleBackgroundCanvas = await renderStaticLayers(brambleLayerData)
+    const backgroundCanvas = await renderStaticLayers(layersData)
     if (!backgroundCanvas) {
       console.error('Failed to create the background canvas')
       return
