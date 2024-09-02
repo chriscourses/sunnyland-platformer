@@ -126,6 +126,12 @@ const player = new Player({
   velocity: { x: 0, y: 0 },
 })
 
+const oposum = new Oposum({
+  x: 650,
+  y: 100,
+  size: 32,
+})
+
 const keys = {
   w: {
     pressed: false,
@@ -159,6 +165,13 @@ function animate(backgroundCanvas) {
   player.handleInput(keys)
   player.update(deltaTime, collisionBlocks)
 
+  // Update oposum position
+  oposum.update(deltaTime, collisionBlocks)
+
+  if (checkCollisions(player, oposum)) {
+    player.velocity.y = -200
+  }
+
   // Track scroll post distance
   if (player.x > SCROLL_POST_RIGHT) {
     const scrollPostDistance = player.x - SCROLL_POST_RIGHT
@@ -184,6 +197,7 @@ function animate(backgroundCanvas) {
   c.drawImage(brambleBackgroundCanvas, camera.x * 0.16, 0)
   c.drawImage(backgroundCanvas, 0, 0)
   player.draw(c)
+  oposum.draw(c)
   // c.fillRect(SCROLL_POST_RIGHT, 100, 10, 100)
   // c.fillRect(300, SCROLL_POST_TOP, 100, 10)
   // c.fillRect(300, SCROLL_POST_BOTTOM, 100, 10)
