@@ -126,11 +126,34 @@ const player = new Player({
   velocity: { x: 0, y: 0 },
 })
 
-const oposum = new Oposum({
-  x: 650,
-  y: 100,
-  size: 32,
-})
+const oposums = [
+  new Oposum({
+    x: 650,
+    y: 100,
+    width: 36,
+    height: 28,
+  }),
+  new Oposum({
+    x: 550,
+    y: 100,
+    width: 36,
+    height: 28,
+  }),
+  new Oposum({
+    x: 600,
+    y: 100,
+    width: 36,
+    height: 28,
+  }),
+  new Oposum({
+    x: 500,
+    y: 100,
+    width: 36,
+    height: 28,
+  }),
+]
+
+const sprites = []
 
 const keys = {
   w: {
@@ -166,10 +189,41 @@ function animate(backgroundCanvas) {
   player.update(deltaTime, collisionBlocks)
 
   // Update oposum position
-  oposum.update(deltaTime, collisionBlocks)
+  for (let i = oposums.length - 1; i >= 0; i--) {
+    const oposum = oposums[i]
+    oposum.update(deltaTime, collisionBlocks)
 
-  if (checkCollisions(player, oposum)) {
-    player.velocity.y = -200
+    // Jump on enemy
+    if (checkCollisions(player, oposum)) {
+      player.velocity.y = -200
+      sprites.push(
+        new Sprite({
+          x: oposum.x,
+          y: oposum.y,
+          width: 32,
+          height: 32,
+          imageSrc: './images/enemy-death.png',
+          spriteCropbox: {
+            x: 0,
+            y: 0,
+            width: 40,
+            height: 41,
+            frames: 6,
+          },
+        }),
+      )
+
+      oposums.splice(i, 1)
+    }
+  }
+
+  for (let i = sprites.length - 1; i >= 0; i--) {
+    const sprite = sprites[i]
+    sprite.update(deltaTime)
+
+    if (sprite.iteration === 1) {
+      sprites.splice(i, 1)
+    }
   }
 
   // Track scroll post distance
@@ -197,7 +251,16 @@ function animate(backgroundCanvas) {
   c.drawImage(brambleBackgroundCanvas, camera.x * 0.16, 0)
   c.drawImage(backgroundCanvas, 0, 0)
   player.draw(c)
-  oposum.draw(c)
+
+  for (let i = oposums.length - 1; i >= 0; i--) {
+    const oposum = oposums[i]
+    oposum.draw(c)
+  }
+
+  for (let i = sprites.length - 1; i >= 0; i--) {
+    const sprite = sprites[i]
+    sprite.draw(c)
+  }
   // c.fillRect(SCROLL_POST_RIGHT, 100, 10, 100)
   // c.fillRect(300, SCROLL_POST_TOP, 100, 10)
   // c.fillRect(300, SCROLL_POST_BOTTOM, 100, 10)

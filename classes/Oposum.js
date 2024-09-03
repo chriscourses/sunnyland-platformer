@@ -4,13 +4,13 @@ const OPOSUM_GRAVITY = 580
 
 class Oposum {
   constructor(
-    { x, y, size, velocity = { x: OPOSUM_X_VELOCITY, y: 0 } },
+    { x, y, width, height, velocity = { x: OPOSUM_X_VELOCITY, y: 0 } },
     turningDistance = 100,
   ) {
     this.x = x
     this.y = y
-    this.width = size
-    this.height = size
+    this.width = width
+    this.height = height
     this.velocity = velocity
     this.isOnGround = false
     this.isImageLoaded = false
@@ -36,7 +36,7 @@ class Oposum {
       x: 0,
       y: 0,
       width: 30,
-      height: 23,
+      height: 19,
     }
     this.distanceTraveled = 0
     this.turningDistance = turningDistance
