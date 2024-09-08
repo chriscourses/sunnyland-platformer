@@ -119,14 +119,14 @@ const renderStaticLayers = async (layersData) => {
 // END - Tile setup
 
 // Change xy coordinates to move player's default position
-const player = new Player({
+let player = new Player({
   x: 100,
   y: 100,
   size: 32,
   velocity: { x: 0, y: 0 },
 })
 
-const oposums = [
+let oposums = [
   new Oposum({
     x: 650,
     y: 100,
@@ -153,7 +153,51 @@ const oposums = [
   }),
 ]
 
-const sprites = []
+let sprites = []
+let hearts = [
+  new Heart({
+    x: 10,
+    y: 10,
+    width: 21,
+    height: 18,
+    imageSrc: './images/hearts.png',
+    spriteCropbox: {
+      x: 0,
+      y: 0,
+      width: 21,
+      height: 18,
+      frames: 6,
+    },
+  }),
+  new Heart({
+    x: 33,
+    y: 10,
+    width: 21,
+    height: 18,
+    imageSrc: './images/hearts.png',
+    spriteCropbox: {
+      x: 0,
+      y: 0,
+      width: 21,
+      height: 18,
+      frames: 6,
+    },
+  }),
+  new Heart({
+    x: 56,
+    y: 10,
+    width: 21,
+    height: 18,
+    imageSrc: './images/hearts.png',
+    spriteCropbox: {
+      x: 0,
+      y: 0,
+      width: 21,
+      height: 18,
+      frames: 6,
+    },
+  }),
+]
 
 const keys = {
   w: {
@@ -168,7 +212,7 @@ const keys = {
 }
 
 let lastTime = performance.now()
-const camera = {
+let camera = {
   x: 0,
   y: 0,
 }
@@ -178,6 +222,94 @@ const SCROLL_POST_TOP = 100
 const SCROLL_POST_BOTTOM = 280
 let oceanBackgroundCanvas = null
 let brambleBackgroundCanvas = null
+
+function init() {
+  player = new Player({
+    x: 100,
+    y: 100,
+    size: 32,
+    velocity: { x: 0, y: 0 },
+  })
+
+  oposums = [
+    new Oposum({
+      x: 650,
+      y: 100,
+      width: 36,
+      height: 28,
+    }),
+    new Oposum({
+      x: 550,
+      y: 100,
+      width: 36,
+      height: 28,
+    }),
+    new Oposum({
+      x: 600,
+      y: 100,
+      width: 36,
+      height: 28,
+    }),
+    new Oposum({
+      x: 500,
+      y: 100,
+      width: 36,
+      height: 28,
+    }),
+  ]
+
+  sprites = []
+  hearts = [
+    new Heart({
+      x: 10,
+      y: 10,
+      width: 21,
+      height: 18,
+      imageSrc: './images/hearts.png',
+      spriteCropbox: {
+        x: 0,
+        y: 0,
+        width: 21,
+        height: 18,
+        frames: 6,
+      },
+    }),
+    new Heart({
+      x: 33,
+      y: 10,
+      width: 21,
+      height: 18,
+      imageSrc: './images/hearts.png',
+      spriteCropbox: {
+        x: 0,
+        y: 0,
+        width: 21,
+        height: 18,
+        frames: 6,
+      },
+    }),
+    new Heart({
+      x: 56,
+      y: 10,
+      width: 21,
+      height: 18,
+      imageSrc: './images/hearts.png',
+      spriteCropbox: {
+        x: 0,
+        y: 0,
+        width: 21,
+        height: 18,
+        frames: 6,
+      },
+    }),
+  ]
+
+  camera = {
+    x: 0,
+    y: 0,
+  }
+}
+
 function animate(backgroundCanvas) {
   // Calculate delta time
   const currentTime = performance.now()
@@ -220,6 +352,16 @@ function animate(backgroundCanvas) {
         collisionDirection === 'left' ||
         collisionDirection === 'right'
       ) {
+        const fullHearts = hearts.filter((heart) => {
+          return !heart.depleted
+        })
+
+        if (!player.isInvincible && fullHearts.length > 0) {
+          fullHearts[fullHearts.length - 1].depleted = true
+        } else if (fullHearts.length === 0) {
+          init()
+        }
+
         player.setIsInvincible()
       }
     }
@@ -269,9 +411,18 @@ function animate(backgroundCanvas) {
     const sprite = sprites[i]
     sprite.draw(c)
   }
+
   // c.fillRect(SCROLL_POST_RIGHT, 100, 10, 100)
   // c.fillRect(300, SCROLL_POST_TOP, 100, 10)
   // c.fillRect(300, SCROLL_POST_BOTTOM, 100, 10)
+  c.restore()
+
+  c.save()
+  c.scale(dpr, dpr)
+  for (let i = hearts.length - 1; i >= 0; i--) {
+    const heart = hearts[i]
+    heart.draw(c)
+  }
   c.restore()
 
   requestAnimationFrame(() => animate(backgroundCanvas))
