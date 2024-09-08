@@ -194,26 +194,34 @@ function animate(backgroundCanvas) {
     oposum.update(deltaTime, collisionBlocks)
 
     // Jump on enemy
-    if (checkCollisions(player, oposum)) {
-      player.velocity.y = -200
-      sprites.push(
-        new Sprite({
-          x: oposum.x,
-          y: oposum.y,
-          width: 32,
-          height: 32,
-          imageSrc: './images/enemy-death.png',
-          spriteCropbox: {
-            x: 0,
-            y: 0,
-            width: 40,
-            height: 41,
-            frames: 6,
-          },
-        }),
-      )
+    const collisionDirection = checkCollisions(player, oposum)
+    if (collisionDirection) {
+      if (collisionDirection === 'bottom' && !player.isOnGround) {
+        player.velocity.y = -200
+        sprites.push(
+          new Sprite({
+            x: oposum.x,
+            y: oposum.y,
+            width: 32,
+            height: 32,
+            imageSrc: './images/enemy-death.png',
+            spriteCropbox: {
+              x: 0,
+              y: 0,
+              width: 40,
+              height: 41,
+              frames: 6,
+            },
+          }),
+        )
 
-      oposums.splice(i, 1)
+        oposums.splice(i, 1)
+      } else if (
+        collisionDirection === 'left' ||
+        collisionDirection === 'right'
+      ) {
+        player.setIsInvincible()
+      }
     }
   }
 

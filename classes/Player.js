@@ -56,6 +56,14 @@ class Player {
       width: 20,
       height: 23,
     }
+    this.isInvincible = false
+  }
+
+  setIsInvincible() {
+    this.isInvincible = true
+    setTimeout(() => {
+      this.isInvincible = false
+    }, 1500)
   }
 
   draw(c) {
@@ -82,6 +90,11 @@ class Player {
       }
 
       c.save()
+      if (this.isInvincible) {
+        c.globalAlpha = 0.5
+      } else {
+        c.globalAlpha = 1
+      }
       c.scale(xScale, 1)
       c.drawImage(
         this.image,
