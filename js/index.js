@@ -222,8 +222,70 @@ const SCROLL_POST_TOP = 100
 const SCROLL_POST_BOTTOM = 280
 let oceanBackgroundCanvas = null
 let brambleBackgroundCanvas = null
+let gems = []
+let gemUI = new Sprite({
+  x: 13,
+  y: 36,
+  width: 15,
+  height: 13,
+  imageSrc: './images/gem.png',
+  spriteCropbox: {
+    x: 0,
+    y: 0,
+    width: 15,
+    height: 13,
+    frames: 5,
+  },
+})
+let gemCount = 0
 
 function init() {
+  gems = []
+  gemCount = 0
+  gemUI = new Sprite({
+    x: 13,
+    y: 36,
+    width: 15,
+    height: 13,
+    imageSrc: './images/gem.png',
+    spriteCropbox: {
+      x: 0,
+      y: 0,
+      width: 15,
+      height: 13,
+      frames: 5,
+    },
+  })
+
+  l_Gems.forEach((row, y) => {
+    row.forEach((symbol, x) => {
+      if (symbol === 18) {
+        gems.push(
+          new Sprite({
+            x: x * 16,
+            y: y * 16,
+            width: 15,
+            height: 13,
+            imageSrc: './images/gem.png',
+            spriteCropbox: {
+              x: 0,
+              y: 0,
+              width: 15,
+              height: 13,
+              frames: 5,
+            },
+            hitbox: {
+              x: x * 16,
+              y: y * 16,
+              width: 15,
+              height: 13,
+            },
+          }),
+        )
+      }
+    })
+  })
+
   player = new Player({
     x: 100,
     y: 100,
@@ -376,6 +438,37 @@ function animate(backgroundCanvas) {
     }
   }
 
+  for (let i = gems.length - 1; i >= 0; i--) {
+    const gem = gems[i]
+    gem.update(deltaTime)
+
+    // THIS IS WHERE WE ARE COLLECTING GEMS
+    const collisionDirection = checkCollisions(player, gem)
+    if (collisionDirection) {
+      // create an item feedback animation
+      sprites.push(
+        new Sprite({
+          x: gem.x - 8,
+          y: gem.y - 8,
+          width: 32,
+          height: 32,
+          imageSrc: './images/item-feedback.png',
+          spriteCropbox: {
+            x: 0,
+            y: 0,
+            width: 32,
+            height: 32,
+            frames: 5,
+          },
+        }),
+      )
+
+      // remove a gem from the game
+      gems.splice(i, 1)
+      gemCount++
+    }
+  }
+
   // Track scroll post distance
   if (player.x > SCROLL_POST_RIGHT) {
     const scrollPostDistance = player.x - SCROLL_POST_RIGHT
@@ -412,17 +505,26 @@ function animate(backgroundCanvas) {
     sprite.draw(c)
   }
 
+  for (let i = gems.length - 1; i >= 0; i--) {
+    const gem = gems[i]
+    gem.draw(c)
+  }
+
   // c.fillRect(SCROLL_POST_RIGHT, 100, 10, 100)
   // c.fillRect(300, SCROLL_POST_TOP, 100, 10)
   // c.fillRect(300, SCROLL_POST_BOTTOM, 100, 10)
   c.restore()
 
+  // UI save and restore
   c.save()
   c.scale(dpr, dpr)
   for (let i = hearts.length - 1; i >= 0; i--) {
     const heart = hearts[i]
     heart.draw(c)
   }
+
+  gemUI.draw(c)
+  c.fillText(gemCount, 33, 46)
   c.restore()
 
   requestAnimationFrame(() => animate(backgroundCanvas))
@@ -444,4 +546,5 @@ const startRendering = async () => {
   }
 }
 
+init()
 startRendering()
