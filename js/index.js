@@ -14,26 +14,30 @@ const brambleLayerData = {
 }
 
 const layersData = {
-  l_New_Layer_8: l_New_Layer_8,
-  l_New_Layer_3: l_New_Layer_3,
-  l_Decorations: l_Decorations,
-  l_New_Layer_5: l_New_Layer_5,
-  l_New_Layer_6: l_New_Layer_6,
-  l_New_Layer_9: l_New_Layer_9,
-  l_New_Layer_9_1: l_New_Layer_9_1,
-}
+   l_New_Layer_1: l_New_Layer_1,
+   l_New_Layer_2: l_New_Layer_2,
+   l_New_Layer_8: l_New_Layer_8,
+   l_Back_Tiles: l_Back_Tiles,
+   l_Decorations: l_Decorations,
+   l_Front_Tiles: l_Front_Tiles,
+   l_Shrooms: l_Shrooms,
+   l_Collisions: l_Collisions,
+   l_Grass: l_Grass,
+   l_Trees: l_Trees,
+};
 
 const tilesets = {
   l_New_Layer_1: { imageUrl: './images/decorations.png', tileSize: 16 },
   l_New_Layer_2: { imageUrl: './images/decorations.png', tileSize: 16 },
   l_New_Layer_8: { imageUrl: './images/tileset.png', tileSize: 16 },
-  l_New_Layer_3: { imageUrl: './images/tileset.png', tileSize: 16 },
+  l_Back_Tiles: { imageUrl: './images/tileset.png', tileSize: 16 },
   l_Decorations: { imageUrl: './images/decorations.png', tileSize: 16 },
-  l_New_Layer_5: { imageUrl: './images/tileset.png', tileSize: 16 },
-  l_New_Layer_6: { imageUrl: './images/decorations.png', tileSize: 16 },
-  l_New_Layer_9: { imageUrl: './images/decorations.png', tileSize: 16 },
-  l_New_Layer_9_1: { imageUrl: './images/tileset.png', tileSize: 16 },
-}
+  l_Front_Tiles: { imageUrl: './images/tileset.png', tileSize: 16 },
+  l_Shrooms: { imageUrl: './images/decorations.png', tileSize: 16 },
+  l_Collisions: { imageUrl: './images/decorations.png', tileSize: 16 },
+  l_Grass: { imageUrl: './images/tileset.png', tileSize: 16 },
+  l_Trees: { imageUrl: './images/decorations.png', tileSize: 16 },
+};
 
 // Tile setup
 const collisionBlocks = []
@@ -126,33 +130,7 @@ let player = new Player({
   velocity: { x: 0, y: 0 },
 })
 
-let oposums = [
-  new Oposum({
-    x: 650,
-    y: 100,
-    width: 36,
-    height: 28,
-  }),
-  new Oposum({
-    x: 550,
-    y: 100,
-    width: 36,
-    height: 28,
-  }),
-  new Oposum({
-    x: 600,
-    y: 100,
-    width: 36,
-    height: 28,
-  }),
-  new Oposum({
-    x: 500,
-    y: 100,
-    width: 36,
-    height: 28,
-  }),
-]
-
+let oposums = []
 let sprites = []
 let hearts = [
   new Heart({
@@ -217,9 +195,9 @@ let camera = {
   y: 0,
 }
 
-const SCROLL_POST_RIGHT = 500
+const SCROLL_POST_RIGHT = 330
 const SCROLL_POST_TOP = 100
-const SCROLL_POST_BOTTOM = 280
+const SCROLL_POST_BOTTOM = 220
 let oceanBackgroundCanvas = null
 let brambleBackgroundCanvas = null
 let gems = []
@@ -301,20 +279,20 @@ function init() {
       height: 28,
     }),
     new Oposum({
-      x: 550,
-      y: 100,
+      x: 906,
+      y: 515,
       width: 36,
       height: 28,
     }),
-    new Oposum({
-      x: 600,
-      y: 100,
+     new Oposum({
+      x: 1150,
+      y: 515,
       width: 36,
       height: 28,
     }),
-    new Oposum({
-      x: 500,
-      y: 100,
+     new Oposum({
+      x: 1663,
+      y: 200,
       width: 36,
       height: 28,
     }),
@@ -373,6 +351,7 @@ function init() {
 }
 
 function animate(backgroundCanvas) {
+  console.log(player.x, player.y)
   // Calculate delta time
   const currentTime = performance.now()
   const deltaTime = (currentTime - lastTime) / 1000
@@ -487,7 +466,7 @@ function animate(backgroundCanvas) {
 
   // Render scene
   c.save()
-  c.scale(dpr, dpr)
+  c.scale(dpr + 1, dpr + 1)
   c.translate(-camera.x, camera.y)
   c.clearRect(0, 0, canvas.width, canvas.height)
   c.drawImage(oceanBackgroundCanvas, camera.x * 0.32, 0)
@@ -517,7 +496,7 @@ function animate(backgroundCanvas) {
 
   // UI save and restore
   c.save()
-  c.scale(dpr, dpr)
+  c.scale(dpr + 1, dpr + 1)
   for (let i = hearts.length - 1; i >= 0; i--) {
     const heart = hearts[i]
     heart.draw(c)
