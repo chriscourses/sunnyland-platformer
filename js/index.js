@@ -14,17 +14,15 @@ const brambleLayerData = {
 }
 
 const layersData = {
-   l_New_Layer_1: l_New_Layer_1,
-   l_New_Layer_2: l_New_Layer_2,
-   l_New_Layer_8: l_New_Layer_8,
-   l_Back_Tiles: l_Back_Tiles,
-   l_Decorations: l_Decorations,
-   l_Front_Tiles: l_Front_Tiles,
-   l_Shrooms: l_Shrooms,
-   l_Collisions: l_Collisions,
-   l_Grass: l_Grass,
-   l_Trees: l_Trees,
-};
+  l_New_Layer_8: l_New_Layer_8,
+  l_Back_Tiles: l_Back_Tiles,
+  l_Decorations: l_Decorations,
+  l_Front_Tiles: l_Front_Tiles,
+  l_Shrooms: l_Shrooms,
+  l_Collisions: l_Collisions,
+  l_Grass: l_Grass,
+  l_Trees: l_Trees,
+}
 
 const tilesets = {
   l_New_Layer_1: { imageUrl: './images/decorations.png', tileSize: 16 },
@@ -37,7 +35,7 @@ const tilesets = {
   l_Collisions: { imageUrl: './images/decorations.png', tileSize: 16 },
   l_Grass: { imageUrl: './images/tileset.png', tileSize: 16 },
   l_Trees: { imageUrl: './images/decorations.png', tileSize: 16 },
-};
+}
 
 // Tile setup
 const collisionBlocks = []
@@ -284,13 +282,13 @@ function init() {
       width: 36,
       height: 28,
     }),
-     new Oposum({
+    new Oposum({
       x: 1150,
       y: 515,
       width: 36,
       height: 28,
     }),
-     new Oposum({
+    new Oposum({
       x: 1663,
       y: 200,
       width: 36,
@@ -351,7 +349,6 @@ function init() {
 }
 
 function animate(backgroundCanvas) {
-  console.log(player.x, player.y)
   // Calculate delta time
   const currentTime = performance.now()
   const deltaTime = (currentTime - lastTime) / 1000
@@ -445,11 +442,15 @@ function animate(backgroundCanvas) {
       // remove a gem from the game
       gems.splice(i, 1)
       gemCount++
+
+      if (gems.length === 0) {
+        console.log('YOU WIN!')
+      }
     }
   }
 
   // Track scroll post distance
-  if (player.x > SCROLL_POST_RIGHT) {
+  if (player.x > SCROLL_POST_RIGHT && player.x < 1680) {
     const scrollPostDistance = player.x - SCROLL_POST_RIGHT
     camera.x = scrollPostDistance
   }
