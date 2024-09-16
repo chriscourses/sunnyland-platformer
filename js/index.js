@@ -50,7 +50,7 @@ collisions.forEach((row, y) => {
           x: x * blockSize,
           y: y * blockSize,
           size: blockSize,
-        }),
+        })
       )
     } else if (symbol === 2) {
       platforms.push(
@@ -59,7 +59,7 @@ collisions.forEach((row, y) => {
           y: y * blockSize + blockSize,
           width: 16,
           height: 4,
-        }),
+        })
       )
     }
   })
@@ -82,7 +82,7 @@ const renderLayer = (tilesData, tilesetImage, tileSize, context) => {
           x * 16,
           y * 16, // destination x, y
           16,
-          16, // destination width, height
+          16 // destination width, height
         )
       }
     })
@@ -104,7 +104,7 @@ const renderStaticLayers = async (layersData) => {
           tilesData,
           tilesetImage,
           tilesetInfo.tileSize,
-          offscreenContext,
+          offscreenContext
         )
       } catch (error) {
         console.error(`Failed to load image for layer ${layerName}:`, error)
@@ -129,6 +129,7 @@ let player = new Player({
 })
 
 let oposums = []
+let eagles = []
 let sprites = []
 let hearts = [
   new Heart({
@@ -256,7 +257,7 @@ function init() {
               width: 15,
               height: 13,
             },
-          }),
+          })
         )
       }
     })
@@ -268,6 +269,14 @@ function init() {
     size: 32,
     velocity: { x: 0, y: 0 },
   })
+  eagles = [
+    new Eagle({
+      x: 816,
+      y: 172,
+      width: 40,
+      height: 41,
+    }),
+  ]
 
   oposums = [
     new Oposum({
@@ -382,13 +391,61 @@ function animate(backgroundCanvas) {
               height: 41,
               frames: 6,
             },
-          }),
+          })
         )
 
         oposums.splice(i, 1)
       } else if (
         collisionDirection === 'left' ||
         collisionDirection === 'right'
+      ) {
+        const fullHearts = hearts.filter((heart) => {
+          return !heart.depleted
+        })
+
+        if (!player.isInvincible && fullHearts.length > 0) {
+          fullHearts[fullHearts.length - 1].depleted = true
+        } else if (fullHearts.length === 0) {
+          init()
+        }
+
+        player.setIsInvincible()
+      }
+    }
+  }
+
+  // Update eagle position
+  for (let i = eagles.length - 1; i >= 0; i--) {
+    const eagle = eagles[i]
+    eagle.update(deltaTime, collisionBlocks)
+
+    // Jump on enemy
+    const collisionDirection = checkCollisions(player, eagle)
+    if (collisionDirection) {
+      if (collisionDirection === 'bottom' && !player.isOnGround) {
+        player.velocity.y = -200
+        sprites.push(
+          new Sprite({
+            x: eagle.x,
+            y: eagle.y,
+            width: 32,
+            height: 32,
+            imageSrc: './images/enemy-death.png',
+            spriteCropbox: {
+              x: 0,
+              y: 0,
+              width: 40,
+              height: 41,
+              frames: 6,
+            },
+          })
+        )
+
+        eagles.splice(i, 1)
+      } else if (
+        collisionDirection === 'left' ||
+        collisionDirection === 'right' ||
+        collisionDirection === 'top'
       ) {
         const fullHearts = hearts.filter((heart) => {
           return !heart.depleted
@@ -436,7 +493,7 @@ function animate(backgroundCanvas) {
             height: 32,
             frames: 5,
           },
-        }),
+        })
       )
 
       // remove a gem from the game
@@ -478,6 +535,11 @@ function animate(backgroundCanvas) {
   for (let i = oposums.length - 1; i >= 0; i--) {
     const oposum = oposums[i]
     oposum.draw(c)
+  }
+
+  for (let i = eagles.length - 1; i >= 0; i--) {
+    const eagle = eagles[i]
+    eagle.draw(c)
   }
 
   for (let i = sprites.length - 1; i >= 0; i--) {
