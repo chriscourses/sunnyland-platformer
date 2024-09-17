@@ -396,6 +396,29 @@ function animate(backgroundCanvas) {
 
         oposums.splice(i, 1)
       } else if (
+        (collisionDirection === 'left' || collisionDirection === 'right') &&
+        player.isOnGround &&
+        player.isRolling
+      ) {
+        sprites.push(
+          new Sprite({
+            x: oposum.x,
+            y: oposum.y,
+            width: 32,
+            height: 32,
+            imageSrc: './images/enemy-death.png',
+            spriteCropbox: {
+              x: 0,
+              y: 0,
+              width: 40,
+              height: 41,
+              frames: 6,
+            },
+          })
+        )
+
+        oposums.splice(i, 1)
+      } else if (
         collisionDirection === 'left' ||
         collisionDirection === 'right'
       ) {

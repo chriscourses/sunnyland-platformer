@@ -47,8 +47,15 @@ class Player {
         height: 32,
         frames: 1,
       },
+      roll: {
+        x: 0,
+        y: 32 * 9,
+        width: 33,
+        height: 32,
+        frames: 4,
+      },
     }
-    this.currentSprite = this.sprites.idle
+    this.currentSprite = this.sprites.roll
     this.facing = 'right'
     this.hitbox = {
       x: 0,
@@ -57,6 +64,8 @@ class Player {
       height: 23,
     }
     this.isInvincible = false
+    this.isRolling = false
+    this.isInAirAfterRolling = false
   }
 
   setIsInvincible() {
@@ -105,7 +114,7 @@ class Player {
         x,
         this.y,
         this.width,
-        this.height,
+        this.height
       )
       c.restore()
     }
@@ -120,6 +129,10 @@ class Player {
     if (this.elapsedTime > secondsInterval) {
       this.currentFrame = (this.currentFrame + 1) % this.currentSprite.frames
       this.elapsedTime -= secondsInterval
+    }
+
+    if (this.isRolling && this.currentFrame === 3) {
+      this.isRolling = false
     }
 
     // Update hitbox position
@@ -143,6 +156,16 @@ class Player {
     this.switchSprites()
   }
 
+  roll() {
+    if (this.isOnGround) {
+      this.currentSprite = this.sprites.roll
+      this.currentFrame = 0
+      this.isRolling = true
+      this.isInAirAfterRolling = true
+      this.velocity.x = this.facing === 'right' ? 300 : -300
+    }
+  }
+
   determineDirection() {
     if (this.velocity.x > 0) {
       this.facing = 'right'
@@ -152,6 +175,8 @@ class Player {
   }
 
   switchSprites() {
+    if (this.isRolling) return
+
     if (
       this.isOnGround &&
       this.velocity.x === 0 &&
@@ -207,6 +232,8 @@ class Player {
   }
 
   handleInput(keys) {
+    if (this.isRolling || this.isInAirAfterRolling) return
+
     this.velocity.x = 0
 
     if (keys.d.pressed) {
@@ -214,6 +241,12 @@ class Player {
     } else if (keys.a.pressed) {
       this.velocity.x = -X_VELOCITY
     }
+  }
+
+  stopRoll() {
+    this.velocity.x = 0
+    this.isRolling = false
+    this.isInAirAfterRolling = false
   }
 
   checkForHorizontalCollisions(collisionBlocks) {
@@ -232,6 +265,7 @@ class Player {
         if (this.velocity.x < -0) {
           this.hitbox.x = collisionBlock.x + collisionBlock.width + buffer
           this.x = this.hitbox.x - 4
+          this.stopRoll()
           break
         }
 
@@ -239,6 +273,7 @@ class Player {
         if (this.velocity.x > 0) {
           this.hitbox.x = collisionBlock.x - this.hitbox.width - buffer
           this.x = this.hitbox.x - 4
+          this.stopRoll()
           break
         }
       }
@@ -271,6 +306,8 @@ class Player {
           this.y = collisionBlock.y - this.height - buffer
           this.hitbox.y = collisionBlock.y - this.hitbox.height - buffer
           this.isOnGround = true
+
+          if (!this.isRolling) this.isInAirAfterRolling = false
           break
         }
       }
