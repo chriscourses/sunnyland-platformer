@@ -10,6 +10,9 @@ window.addEventListener('keydown', (event) => {
     case 'd':
       keys.d.pressed = true
       break
+    case ' ':
+      player.roll()
+      break
   }
 })
 

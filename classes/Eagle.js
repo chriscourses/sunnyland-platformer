@@ -5,7 +5,7 @@ const EAGLE_GRAVITY = 580
 class Eagle {
   constructor(
     { x, y, width, height, velocity = { x: EAGLE_X_VELOCITY, y: 0 } },
-    turningDistance = 100
+    turningDistance = 100,
   ) {
     this.x = x
     this.y = y
@@ -18,7 +18,7 @@ class Eagle {
     this.image.onload = () => {
       this.isImageLoaded = true
     }
-    this.image.src = './images/EAGLE.png'
+    this.image.src = './images/eagle.png'
     this.elapsedTime = 0
     this.currentFrame = 0
     this.sprites = {
@@ -76,7 +76,7 @@ class Eagle {
         x,
         this.y,
         this.width,
-        this.height
+        this.height,
       )
       c.restore()
     }

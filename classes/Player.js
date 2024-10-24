@@ -47,8 +47,15 @@ class Player {
         height: 32,
         frames: 1,
       },
+      roll: {
+        x: 0,
+        y: 32 * 9,
+        width: 33,
+        height: 32,
+        frames: 4,
+      },
     }
-    this.currentSprite = this.sprites.idle
+    this.currentSprite = this.sprites.roll
     this.facing = 'right'
     this.hitbox = {
       x: 0,
@@ -57,6 +64,8 @@ class Player {
       height: 23,
     }
     this.isInvincible = false
+    this.isRolling = false
+    this.isInAirAfterRolling = false
   }
 
   setIsInvincible() {
@@ -122,6 +131,10 @@ class Player {
       this.elapsedTime -= secondsInterval
     }
 
+    if (this.isRolling && this.currentFrame === 3) {
+      this.isRolling = false
+    }
+
     // Update hitbox position
     this.hitbox.x = this.x + 4
     this.hitbox.y = this.y + 9
@@ -152,6 +165,8 @@ class Player {
   }
 
   switchSprites() {
+    if (this.isRolling) return
+
     if (
       this.isOnGround &&
       this.velocity.x === 0 &&
@@ -206,7 +221,19 @@ class Player {
     this.velocity.y += GRAVITY * deltaTime
   }
 
+  roll() {
+    if (this.isOnGround) {
+      this.currentFrame = 0
+      this.isRolling = true
+      this.isInAirAfterRolling = true
+      this.currentSprite = this.sprites.roll
+      this.velocity.x = this.facing === 'right' ? 300 : -300
+    }
+  }
+
   handleInput(keys) {
+    if (this.isRolling || this.isInAirAfterRolling) return
+
     this.velocity.x = 0
 
     if (keys.d.pressed) {
@@ -232,6 +259,9 @@ class Player {
         if (this.velocity.x < -0) {
           this.hitbox.x = collisionBlock.x + collisionBlock.width + buffer
           this.x = this.hitbox.x - 4
+
+          this.isInAirAfterRolling = false
+          this.velocity.x = 0
           break
         }
 
@@ -239,6 +269,9 @@ class Player {
         if (this.velocity.x > 0) {
           this.hitbox.x = collisionBlock.x - this.hitbox.width - buffer
           this.x = this.hitbox.x - 4
+
+          this.isInAirAfterRolling = false
+          this.velocity.x = 0
           break
         }
       }
@@ -271,6 +304,11 @@ class Player {
           this.y = collisionBlock.y - this.height - buffer
           this.hitbox.y = collisionBlock.y - this.hitbox.height - buffer
           this.isOnGround = true
+
+          if (!this.isRolling) {
+            this.isInAirAfterRolling = false
+          }
+
           break
         }
       }
