@@ -360,7 +360,7 @@ function init() {
 function animate(backgroundCanvas) {
   // Calculate delta time
   const currentTime = performance.now()
-  const deltaTime = (currentTime - lastTime) / 1000
+  const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.1)
   lastTime = currentTime
 
   // Update player position
